@@ -8,7 +8,7 @@ server.
 
 """
 
-from __future__ import print_function
+
 
 import datetime
 import os
@@ -18,10 +18,10 @@ from flask import Flask, g, session
 from flask_lazyviews import LazyViews
 from flask_redis import Redis
 
-import constants
-import settings
+from . import constants
+from . import settings
 
-from compat import iteritems
+from .compat import iteritems
 
 
 def create_app(**options):

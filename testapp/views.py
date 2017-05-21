@@ -23,11 +23,11 @@ from flask import (
 )
 from flask_redis import string_types
 
-import storage
+from . import storage
 
-from constants import ERRORS, USERNAME_KEY
-from decorators import username_required
-from utils import to_index, to_threads
+from .constants import ERRORS, USERNAME_KEY
+from .decorators import username_required
+from .utils import to_index, to_threads
 
 
 @username_required

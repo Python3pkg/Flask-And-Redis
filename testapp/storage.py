@@ -16,15 +16,15 @@ except ImportError:
 
 from flask import current_app
 
-from compat import iteritems, iterkeys
-from constants import (
+from .compat import iteritems, iterkeys
+from .constants import (
     COMMENT_KEY,
     THREAD_KEY,
     THREAD_COMMENTS_KEY,
     THREAD_COUNTER_KEY,
     THREADS_KEY,
 )
-from utils import build_key, uid
+from .utils import build_key, uid
 
 
 content = current_app.extensions['redis']['REDIS_CONTENT']
@@ -120,7 +120,7 @@ def list_comments(thread_uid):
         for comment_uid in links.lrange(comments_key, 0, -1):
             pipe.hgetall(build_key(COMMENT_KEY, thread_uid, comment_uid))
             uids.append(comment_uid)
-        return OrderedDict(zip(uids, pipe.execute()))
+        return OrderedDict(list(zip(uids, pipe.execute())))
 
 
 def list_threads():
@@ -137,7 +137,7 @@ def list_threads():
         for thread_uid in links.lrange(build_key(THREADS_KEY), 0, -1):
             pipe.hgetall(build_key(THREAD_KEY, thread_uid))
             uids.append(thread_uid)
-        threads = dict(zip(uids, pipe.execute()))
+        threads = dict(list(zip(uids, pipe.execute())))
 
     # Make another multi request for threads' counters and last comments where
     # possible
@@ -155,7 +155,7 @@ def list_threads():
         with links.pipeline() as pipe:
             for thread_uid in iterkeys(comments_request):
                 pipe.get(build_key(THREAD_COUNTER_KEY, thread_uid))
-            response = zip(iterkeys(comments_request), pipe.execute())
+            response = list(zip(iterkeys(comments_request), pipe.execute()))
 
         for thread_uid, counter in response:
             threads[thread_uid]['comments_counter'] = counter
@@ -164,7 +164,7 @@ def list_threads():
             for thread_uid, comment_uid in iteritems(comments_request):
                 key = build_key(COMMENT_KEY, thread_uid, comment_uid)
                 pipe.hgetall(key)
-            response = zip(iterkeys(comments_request), pipe.execute())
+            response = list(zip(iterkeys(comments_request), pipe.execute()))
 
         for thread_uid, comment in response:
             threads[thread_uid]['last_comment'] = comment

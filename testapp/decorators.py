@@ -11,7 +11,7 @@ from functools import wraps
 
 from flask import g
 
-from utils import to_index
+from .utils import to_index
 
 
 def username_required(func):

@@ -16,7 +16,7 @@ from nose.plugins.attrib import attr
 from redis import StrictRedis
 from redis.connection import UnixDomainSocketConnection
 
-from app import create_app
+from .app import create_app
 
 
 TEST_REDIS_DB = 0

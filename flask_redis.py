@@ -9,11 +9,12 @@ Simple as dead support of Redis database for Flask apps.
 
 import inspect
 import sys
+import collections
 
 try:
     import urllib.parse as urlparse
 except ImportError:  # pragma: no cover
-    import urlparse
+    import urllib.parse
 
 try:
     from flask import _app_ctx_stack
@@ -34,7 +35,7 @@ __version__ = '0.7'
 
 
 IS_PY3 = sys.version_info[0] == 3
-string_types = (str if IS_PY3 else basestring, )  # noqa
+string_types = (str if IS_PY3 else str, )  # noqa
 
 # Which stack should we use? _app_ctx_stack is new in 0.9
 connection_stack = _app_ctx_stack or _request_ctx_stack
@@ -135,8 +136,8 @@ class Redis(object):
         # If should, parse URL and store values to application config to later
         # reuse if necessary
         if url:
-            urlparse.uses_netloc.append('redis')
-            url = urlparse.urlparse(url)
+            urllib.parse.uses_netloc.append('redis')
+            url = urllib.parse.urlparse(url)
 
             # URL could contains host, port, user, password and db values
             app.config[key('HOST')] = url.hostname
@@ -176,7 +177,7 @@ class Redis(object):
         """
         for attr in dir(connection):
             value = getattr(connection, attr)
-            if attr.startswith('_') or not callable(value):
+            if attr.startswith('_') or not isinstance(value, collections.Callable):
                 continue
             self.__dict__[attr] = self._wrap_public_method(attr)
 
